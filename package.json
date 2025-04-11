@@ -1,11 +1,7 @@
-{
-  "name": "wallet-api",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2"
+const walletData = [
+  {
+    phone: "9322535019",
+    name: "Aarti Sharma",
+    points: 100 // got for registration + 1 seminar
   }
-}
+];
