@@ -14,7 +14,7 @@ app.use(cors({
 }));
 
 // ✅ Google Sheet ID (from your sheet URL)
-const SHEET_ID = 'https://docs.google.com/spreadsheets/d/1_FLuLWAeEPTBFV31AUMlit_zH96aUIDEID_9O6cX1wo/edit?gid=0#gid=0'; // replace with actual sheet ID
+const SHEET_ID = '1_FLuLWAeEPTBFV31AUMlit_zH96aUIDEID_9O6cX1wo'; // replace with actual sheet ID
 
 // ✅ API route to fetch wallet by phone number
 app.get("/api/wallet/:phone", async (req, res) => {
