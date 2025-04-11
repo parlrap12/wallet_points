@@ -1,8 +1,16 @@
 const express = require("express");
+const cors = require("cors"); // ✅ Import cors
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Sample static wallet data (you can expand this later or fetch from DB/Odoo)
+// ✅ Enable CORS for Odoo frontend
+app.use(cors({
+  origin: 'https://code-icons-technology3.odoo.com', // allow only this frontend
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
+
+// Sample static wallet data
 const walletData = [
   {
     phone: "9322535019",
