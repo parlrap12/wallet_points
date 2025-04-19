@@ -1,51 +1,36 @@
-const express = require("express");
-const cors = require("cors");
-const { GoogleSpreadsheet } = require("google-spreadsheet");
-const creds = require("./credentials.json"); // Make sure this file is in the same folder
-
+const { GoogleSpreadsheet } = require('google-spreadsheet');
+const express = require('express');
+const cors = require('cors');
 const app = express();
-const PORT = process.env.PORT || 3000;
+require('dotenv').config();
 
-// ✅ Enable CORS for your Odoo frontend
-app.use(cors({
-  origin: 'https://code-icons-technology3.odoo.com',
-  methods: ['GET', 'POST'],
-  credentials: true
-}));
+app.use(cors()); // Open for all, or restrict to specific domain
 
-// ✅ Google Sheet ID (from your sheet URL)
-const SHEET_ID = '1_FLuLWAeEPTBFV31AUMlit_zH96aUIDEID_9O6cX1wo'; // replace with actual sheet ID
+const doc = new GoogleSpreadsheet(process.env.SHEET_ID);
 
-// ✅ API route to fetch wallet by phone number
-app.get("/api/wallet/:phone", async (req, res) => {
-  const { phone } = req.params;
-
+app.get('/api/wallet/:phone', async (req, res) => {
   try {
-    const doc = new GoogleSpreadsheet(SHEET_ID);
-    await doc.useServiceAccountAuth(creds);
-    await doc.loadInfo();
+    await doc.useServiceAccountAuth({
+      client_email: process.env.CLIENT_EMAIL,
+      private_key: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
+    });
 
-    const sheet = doc.sheetsByIndex[0];
+    await doc.loadInfo();
+    const sheet = doc.sheetsByIndex[0]; // or get sheet by title
     const rows = await sheet.getRows();
 
-    const beautician = rows.find(row => String(row.Phone) === String(phone));
+    const userRow = rows.find(row => row.Phone === req.params.phone);
 
-    if (beautician) {
-      res.json({
-        phone: beautician.Phone,
-        name: beautician.Name,
-        points: beautician.Points || 0
-      });
+    if (userRow) {
+      res.json({ name: userRow.Name, points: userRow.Points });
     } else {
-      res.status(404).json({ message: "Beautician not found" });
+      res.status(404).json({ message: "No wallet data found for this phone number." });
     }
-  } catch (error) {
-    console.error("Error fetching data:", error);
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on ${PORT}`));
