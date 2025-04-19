@@ -25,16 +25,16 @@ app.get("/api/wallet/:phone", async (req, res) => {
     await doc.useServiceAccountAuth(creds);
     await doc.loadInfo();
 
-    const sheet = doc.sheetsByIndex[0]; // use first sheet
+    const sheet = doc.sheetsByIndex[0];
     const rows = await sheet.getRows();
 
-    const beautician = rows.find(row => row.Phone === phone);
+    const beautician = rows.find(row => String(row.Phone) === String(phone));
 
     if (beautician) {
       res.json({
         phone: beautician.Phone,
         name: beautician.Name,
-        points: beautician.Points
+        points: beautician.Points || 0
       });
     } else {
       res.status(404).json({ message: "Beautician not found" });
@@ -44,6 +44,7 @@ app.get("/api/wallet/:phone", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
